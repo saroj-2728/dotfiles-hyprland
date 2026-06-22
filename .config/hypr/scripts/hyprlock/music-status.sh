@@ -34,4 +34,4 @@ fi
 # Escape for GTK
 display_text=$(escape "$display_text")
 
-echo "$icon $display_text"
+echo "$display_text"

@@ -107,7 +107,7 @@ hl.layer_rule({
 hl.window_rule({
     name = "translucent-discord-background",
     match = {
-        class = "equibop",
+        class = "discord",
     },
     opacity = "1.0 override 0.1 override",
 })
@@ -115,12 +115,12 @@ hl.window_rule({
 hl.window_rule({
     name = "discord-in-sp-workspace",
     match = {
-        class = "equibop",
+        class = "discord",
     },
     -- move = {
     workspace = "special:discord silent",
     -- },
-    fullscreen = true,
+    fullscreen = 1,
 })
 
 hl.window_rule({

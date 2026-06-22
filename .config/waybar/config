@@ -52,6 +52,7 @@
                 "steam": "",
                 "blueman-manager": "",
                 "org.pulseaudio.pavucontrol": "",
+                "org.gnome.TextEditor": "󱄽",
                 "": "."
             },
             "on-click": "pkill waybar"
@@ -258,6 +259,8 @@
                 "steam": "",
                 "blueman-manager": "",
                 "org.pulseaudio.pavucontrol": "",
+                "org.gnome.TextEditor": "󱄽",
+
                 "": "."
             },
             "on-click": "pkill waybar"
