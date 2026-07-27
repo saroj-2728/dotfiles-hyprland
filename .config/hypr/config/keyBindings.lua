@@ -15,10 +15,52 @@ local mainMod = "SUPER"
 local superShift = "SUPER + SHIFT"
 
 
+-------------------------
+--- Inputs to browser ---
+-------------------------
+local firefoxInput = [[sh -c '
+input=$(rofi -dmenu -p "Firefox")
+[ -z "$input" ] && exit
+
+case "$input" in
+    *.*|*://*)
+        firefox --new-tab "$input"
+        ;;
+    *)
+        firefox --new-tab "https://www.google.com/search?q=$(printf "%s" "$input" | sed "s/ /+/g")"
+        ;;
+esac
+']]
+
+local zenInput = [[sh -c '
+input=$(rofi -dmenu -p "Zen")
+[ -z "$input" ] && exit
+
+case "$input" in
+    *.*|*://*)
+        zen-browser --new-tab "$input"
+        ;;
+    *)
+        zen-browser --new-tab "https://www.google.com/search?q=$(printf "%s" "$input" | sed "s/ /+/g")"
+        ;;
+esac
+']]
 
 ---------------------
 ---- KEYBINDINGS ----
 ---------------------
+
+
+--- Submaps ----
+hl.bind(superShift .. " + slash", hl.dsp.submap("lock_mode"))
+
+-- Start a submap called "lock_mode".
+hl.define_submap("lock_mode", function()
+    hl.bind(superShift .. " + L", hl.dsp.exec_cmd("hyprlock"))
+
+    hl.bind(superShift .. " + slash", hl.dsp.submap("reset"))
+end)
+
 
 -- Close focused window
 hl.bind(mainMod .. " + Q", hl.dsp.window.close())
@@ -55,6 +97,8 @@ hl.bind(mainMod .. " + S", hl.dsp.workspace.toggle_special("magic"))
 hl.bind(mainMod .. " + SHIFT + S", hl.dsp.window.move({ workspace = "special:magic" }))
 -- Discord on special workspace, opens in full screen by default
 hl.bind(mainMod .. " + D", hl.dsp.workspace.toggle_special("discord"))
+-- Special workspace with nothing (to freeze)
+hl.bind(mainMod .. " + SHIFT + K", hl.dsp.workspace.toggle_special("freeze"))
 
 
 -- Scroll through existing workspaces with mainMod + scroll
@@ -129,7 +173,8 @@ hl.bind(mainMod .. " + SPACE", hl.dsp.exec_cmd(menu))
 hl.bind("CONTROL + " .. mainMod .. " + SPACE", hl.dsp.exec_cmd(commandMenu))
 hl.bind(superShift .. " + SPACE", hl.dsp.exec_cmd(windowMenu))
 hl.bind(mainMod .. " + N", hl.dsp.exec_cmd("swaync-client -t"))
-
+hl.bind(superShift .. " + I", hl.dsp.exec_cmd(firefoxInput))
+hl.bind(superShift .. " + Z", hl.dsp.exec_cmd(zenInput))
 
 -- Utilities
 -- Screenshot
@@ -140,7 +185,7 @@ hl.bind("SHIFT + PRINT", hl.dsp.exec_cmd("hyprshot -m region"))
 hl.bind(superShift .. " + L", hl.dsp.exec_cmd("hyprlock"))
 
 -- Toggle fullscreen
-hl.bind(mainMod .. " + F", hl.dsp.window.fullscreen({ mode = "maximized", action = "toggle" }))   -- Toggle fullscreen (maximize)
+hl.bind(mainMod .. " + F", hl.dsp.window.fullscreen({ mode = "maximized", action = "toggle" }))     -- Toggle fullscreen (maximize)
 hl.bind(superShift .. " + F", hl.dsp.window.fullscreen({ mode = "fullscreen", action = "toggle" })) -- Toggle fullscreen (fullscreen)
 
 -- Toggle waybar

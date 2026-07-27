@@ -8,32 +8,15 @@
       "segments": [
         {
           "leading_diamond": "\u256d\u2500\ue0b6",
-          "trailing_diamond": "\ue0b0",
-          "template": " \uf120 {{ .Name }} ",
-          "foreground": "#f8f8f2",
-          "background": "#6272a4",
+          "template": " \uf120 {{ .Name }} │",
+          "foreground": "#cfcfca",
+          "background": "#1C1C1C",
           "type": "shell",
           "style": "diamond"
         },
         {
-          "template": " {{ .UserName }} ",
-          "foreground": "#44475a",
-          "powerline_symbol": "\ue0b0",
-          "background": "#00FFCC",
-          "type": "session",
-          "style": "powerline"
-        },
-        {
-          "template": " in ",
-          "foreground": "#f8f8f2",
-          "powerline_symbol": "\ue0b0",
-          "background": "#44475a",
-          "type": "text",
-          "style": "powerline"
-        },
-        {
           "template": " \uf0e7 root ",
-          "foreground": "#f8f8f2",
+          "foreground": "#cfcfca",
           "powerline_symbol": "\ue0b0",
           "background": "#ff5555",
           "type": "root",
@@ -44,12 +27,12 @@
             "folder_separator_icon": "/",
             "style": "unique"
           },
-          "template": " \uf07c {{ .Path }} ",
-          "foreground": "#44475a",
-          "powerline_symbol": "\ue0b0",
-          "background": "#00FFCC",
+          "template": "\uf07c {{ .Path }}",
+          "foreground": "#0087AF",
+          "background": "#1C1C1C",
           "type": "path",
-          "style": "powerline"
+          "style": "powerline",
+          "powerline_symbol": "\ue0b0"
         },
         {
           "options": {
@@ -58,13 +41,14 @@
             "fetch_upstream_icon": true
           },
           "template": " {{ .UpstreamIcon }} {{ .HEAD }}{{ if or (.Working.Changed) (.Working.Untracked) }} \uf044 {{ .Working.String }}{{ end }}{{ if and (or (.Working.Changed) (.Working.Untracked)) (.Staging.Changed) }}{{ end }}{{ if .Staging.Changed }} \uf046 {{ .Staging.String }}{{ end }}{{ if gt .StashCount 0 }} \ueb4b {{ .StashCount }}{{ end }} ",
-          "foreground": "#282a36",
-          "powerline_symbol": "\ue0b0",
-          "background": "#28c4cf",
+          "foreground": "#5FD700",
+          "background": "#111111",
           "type": "git",
-          "style": "powerline"
+          "style": "powerline",
+          "powerline_symbol": "\ue0b0"
         }
-      ]
+      ],
+      "newline": true
     },
     {
       "type": "prompt",
@@ -72,7 +56,7 @@
       "segments": [
         {
           "template": "\u2570\u2500",
-          "foreground": "#6272a4",
+          "foreground": "#1C1C1C",
           "type": "text",
           "style": "plain"
         },
@@ -81,11 +65,11 @@
             "always_enabled": true
           },
           "template": "\uf054",
-          "foreground": "#00FFCC",
+          "foreground": "#4DAA00",
           "type": "status",
           "style": "diamond",
           "foreground_templates": [
-            "{{ if gt .Code 0 }}#ff5555{{ end }}"
+            "{{ if gt .Code 0 }}#cc4444{{ end }}"
           ]
         }
       ],
