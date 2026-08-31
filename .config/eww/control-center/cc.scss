@@ -1,228 +1,167 @@
-* {
-  all: unset;
+// ====================================================================
+//  Control Center - quick settings
+// ====================================================================
+
+* { all: unset; }
+
+// scoped to the control center so power-menu / date-widget are untouched
+.cc, .cc * { font-family: "FantasqueSansM Nerd Font", "JetBrainsMono Nerd Font", sans-serif; }
+
+.cc-backdrop {
+  background-color: rgba(0, 0, 0, 0.1);   // light dim so you can tell the CC is open (no blur) ... more dimming controlled by hyprland layer_rule
+  margin-top: 46px;                        // leave the bar strip untouched
 }
 
-// Main Control Center Window
-.control-center-box {
-  background-color: rgba(0, 0, 0, 0.98);
-  opacity: 0.95;
-  padding: 25px;
-  color: #a9b1d6;
-  font-family: "JetBrains Mono Nerd Font", monospace;
-  border: 2px solid rgba(255, 255, 255, 0.12);
-  // border: 3px solid #00FFCC;
-  border-radius: 8px;
-  // border-image: linear-gradient(to bottom right, rgb(102, 107, 110), #0099FF) 1;
+$bg:       rgba(16, 17, 23, 0.86);
+$card:     rgba(255, 255, 255, 0.05);
+$card-hi:  rgba(255, 255, 255, 0.10);
+$stroke:   rgba(255, 255, 255, 0.08);
+$text:     #cdd6f4;
+$sub:      #9399b2;
+$blue:     #89b4fa;
+$peach:    #fab387;
+$red:      #f38ba8;
 
-}
+$r-panel:  9px;
+$r-card:   7px;
+$r-tile:   6px;
+$r-btn:    5px;
 
-// Sliders Section
-.sliders-box {
-  margin-bottom: 8px;
-}
-
-.slider-item {
-  padding: 12px;
-  border-radius: 8px;
-  background-color: #1d202e;
-  margin-bottom: 8px;
-}
-
-.slider-item:hover {
-  background-color: #252838;
-}
-
-.slider-icon {
-  font-size: 22px;
-  margin-right: 6px;
-  min-width: 24px;
-  color: rgb(102, 107, 110);
-}
-
-scale trough {
-  background-color: #32344a;
-  border-radius: 5px;
-  min-height: 16px;
-  min-width: 292px;
-}
-
-scale trough highlight {
-  background-image: linear-gradient(45deg, rgba(0,255,204,0.93), rgba(51,102,255,0.93));
-  border-radius: 5px;
-}
-
-// Network Controls Row
-// Network Box (WiFi and Bluetooth)
-.network-box {
-  background-color: #1d202e;
-  border-radius: 8px;
-  margin-bottom: 0;
-}
-
-// Special hover class for network box
-.network-box.hover {
-  background-color: #252838;
-}
-
-.network-container {
-  padding: 0;
-  margin: 0;
-}
-
-.network-details {
-  padding: 10px 15px;
-  min-width: 105px;
-  border-radius: 8px 0 0 8px;
-}
-
-// Hover class for network details
-.network-details.hover {
-  background-color: #292c3c;
-  color: white;
-}
-
-.icon-and-label {
-  margin-bottom: 4px;
-}
-
-.network-icon {
-  font-size: 18px;
-  min-width: 24px;
-}
-
-.network-label {
+// ---- panel --------------------------------------------------------------
+.cc {
+  min-width: 392px;
+  background-color: $bg;
+  border: 1px solid $stroke;
+  border-radius: $r-panel;
+  padding: 16px;
+  color: $text;
   font-size: 13px;
-  font-weight: bold;
 }
 
-.network-status {
-  font-size: 11px;
-  opacity: 0.8;
-  margin-left: 4px;
+// ---- header -----------------------------------------------------------
+.cc-avatar {
+  min-width: 42px;
+  min-height: 42px;
+  border-radius: 21px;
+  background-image: url("file:///home/sp/.config/waybar/assets/avatar.png");
+  background-size: cover;
+  background-position: center;
+  border: 1px solid $stroke;
 }
+.cc-hi   { font-size: 15px; font-weight: bold; color: #ffffff; }
+.cc-date { font-size: 11px; color: $sub; margin-top: 2px; }
 
-// When parent has hover class, make text brighter
-.hover .network-status {
-  opacity: 1.0;
-}
-
-.network-arrow {
+.cc-lock {
+  min-width: 38px;
+  min-height: 34px;
+  border-radius: $r-btn;
+  background-color: $card;
+  color: $text;
   font-size: 14px;
-  opacity: 0.7;
-  padding: 10px 15px;
-  border-radius: 0 8px 8px 0;
+}
+.cc-lock:hover { background-color: $card-hi; }
+
+// ---- cards ----------------------------------------------------------------
+.cc-card {
+  background-color: $card;
+  border-radius: $r-card;
+  padding: 14px 16px;
 }
 
-.network-arrow:hover {
-  opacity: 1.0;
-  background-color: #292c3c;
-  color: white;
+// ---- sliders --------------------------------------------------------------
+.cc-sld-icon { font-size: 17px; min-width: 26px; color: #bac2de; }
+.cc-sld-icon.btn:hover { color: #ffffff; }
+.cc-sld-icon.muted { color: $red; }
+.cc-sld-val { font-size: 12px; color: $sub; min-width: 38px; }
+
+.cc-scale {
+  trough {
+    min-height: 7px;
+    border-radius: 999px;
+    background-color: rgba(255, 255, 255, 0.13);
+    highlight { border-radius: 999px; background-color: $blue; }
+  }
+  slider {
+    background-color: #ffffff;
+    border-radius: 999px;
+    min-width: 14px;
+    min-height: 14px;
+    margin: -5px;
+  }
+  &.bright trough highlight { background-color: $peach; }
 }
 
-// WiFi styling
-.wifi-connected {
-  color: #9ece6a;
+// ---- quick toggles --------------------------------------------------------
+.cc-grid { margin-top: 1px; }
+
+.cc-toggle {
+  background-color: $card;
+  border-radius: $r-tile;
+  min-height: 42px;
+  padding: 6px 12px;
+  transition: background-color 140ms ease, box-shadow 140ms ease;
 }
 
-.wifi-disconnected {
-  color: #f7768e;
+// ON = subtle blue wash + a faint blue inner outline (survives hover)
+.cc-toggle.on {
+  background-color: rgba(137, 180, 250, 0.15);
+  box-shadow: inset 0 0 0 1px rgba(137, 180, 250, 0.34);
 }
 
-// Hover effects for WiFi
-.hover .wifi-connected {
-  color: #b9f397;
+// hover - keep on / off clearly different
+.cc-toggle-evt:hover .cc-toggle    { background-color: rgba(255, 255, 255, 0.09); }
+.cc-toggle-evt:hover .cc-toggle.on {
+  background-color: rgba(137, 180, 250, 0.24);
+  box-shadow: inset 0 0 0 1px rgba(137, 180, 250, 0.55);
 }
 
-.hover .wifi-disconnected {
-  color: #ff99ab;
+// no square - the icon itself carries the state colour
+.cc-toggle-ico {
+  font-size: 21px;
+  min-width: 30px;
+  margin-right: 13px;
+  color: #6c7086;
 }
+.cc-toggle.on .cc-toggle-ico { color: $blue; }
 
-// Bluetooth styling
-.bt-on {
-  color: #7aa2f7;
-}
+.cc-toggle-name { font-size: 12.5px; font-weight: bold; color: #9aa2b4; }
+.cc-toggle.on .cc-toggle-name { color: #ffffff; }
+.cc-toggle-sub  { font-size: 10px; color: $sub; margin-top: 2px; }
+.cc-toggle.on .cc-toggle-sub { color: #a7bde8; }
 
-.bt-off {
-  color: #f7768e;
+// ---- media -------------------------------------------------------------
+.cc-media-title  { font-size: 12px; font-weight: bold; color: $text; }
+.cc-media-artist { font-size: 10px; color: $sub; margin-top: 1px; }
+.cc-mbtn {
+  min-width: 33px;
+  min-height: 33px;
+  border-radius: $r-btn;
+  font-size: 15px;
+  color: $text;
 }
+.cc-mbtn:hover { background-color: rgba(255, 255, 255, 0.10); }
+.cc-mbtn.play  { background-color: $blue; color: #11121a; }
+.cc-mbtn.play:hover { background-color: #9ec5ff; }
 
-// Hover effects for Bluetooth
-.hover .bt-on {
-  color: #97baff;
+// ---- session row ------------------------------------------------------
+// pull up: cancels the phantom spacing left by the collapsed media revealer
+.cc-session { margin-top: -1px; }
+.cc-sbtn {
+  min-width: 44px;
+  min-height: 38px;
+  border-radius: $r-btn;
+  background-color: $card;
+  color: $text;
+  font-size: 16px;
 }
+.cc-sbtn:hover { background-color: $card-hi; }
+.cc-sbtn.danger:hover { background-color: rgba(243, 139, 168, 0.20); color: $red; }
 
-.hover .bt-off {
-  color: #ff99ab;
+.cc-confirm {
+  background-color: rgba(243, 139, 168, 0.10);
+  border-radius: $r-btn;
+  padding: 4px 6px 4px 12px;
 }
-
-// New class for text hover effect only
-.text-hover .network-label,
-.text-hover .network-status {
-  color: white;
-}
-
-// Night Light styling
-.nightlight-on {
-  color: #ff9e64;
-}
-
-.nightlight-off {
-  color: #7aa2f7;
-}
-
-// Hover effects for Night Light icons
-.hover .nightlight-on {
-  color: #ffb483;
-  /* Brighter orange on hover */
-}
-
-.hover .nightlight-off {
-  color: #97baff;
-  /* Brighter blue on hover */
-}
-
-// dnd Assist styling
-.dnd-on {
-  color: #bb9af7;
-  /* Purple for dnd mode on */
-}
-
-.dnd-off {
-  color: #7aa2f7;
-  /* Blue for dnd mode off */
-}
-
-// Hover effects for dnd icons
-.hover .dnd-on {
-  color: #d4b8ff;
-  /* Brighter purple on hover */
-}
-
-.hover .dnd-off {
-  color: #97baff;
-  /* Brighter blue on hover */
-}
-
-// Power Menu Button styling
-.power-icon-button {
-  background-color: #1d202e;
-  border-radius: 8px;
-  padding: 8px;
-  margin-top: 8px;
-  min-width: 40px;
-  min-height: 40px;
-}
-
-.power-icon-button.hover {
-  background-color: #252838;
-}
-
-.power-icon {
-  font-size: 18px;
-  color: #f7768e;
-  transition: color 200ms ease;
-}
-
-.power-icon-button.hover .power-icon {
-  color: #ff99ab;
-}
+.cc-confirm-q { font-size: 12px; font-weight: bold; color: $text; }
+.cc-sbtn.confirm-yes { color: $red; }
+.cc-sbtn.confirm-yes:hover { background-color: rgba(243, 139, 168, 0.22); }

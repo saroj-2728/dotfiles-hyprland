@@ -15,60 +15,87 @@ window#waybar {
     border-bottom: 2px solid rgba(255, 255, 255, 0.12);
 }
 
-/* Left Section - Launcher + Window + Workspaces */
-#custom-launcher {
-    font-size: 35px;
-    padding: 0 14px;
-    color: #1e96d2;
-}
+/* ============================================================
+   Left section — launcher · window · workspaces  (pill style,
+   matches the right side)
+   ============================================================ */
 
-#custom-launcher:hover {
-    background: rgba(50, 50, 50, 0.9);
-}
-
-/* Window module for app icons */
+#custom-launcher,
 #window {
-    margin: 0 0 0 20px;
-    padding: 0 14px;
-    font-size: 18px;
-    transition: background 0.2s ease;
+    background-color: rgba(255, 255, 255, 0.08);
+    border-radius: 7px;
+    margin: 6px 3px;
+    transition: background-color 0.2s ease;
 }
 
+#custom-launcher:hover,
 #window:hover {
-    background: rgba(50, 50, 50, 0.9);
+    background-color: rgba(255, 255, 255, 0.14);
 }
 
+#custom-launcher {
+    margin-left: 8px;
+    padding: 0 13px;
+    font-size: 21px;
+    color: #29a9e0;
+}
+
+/* window module — current app icon */
+#window {
+    padding: 0 12px;
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.82);
+}
+
+/* workspaces — a segmented group: each number is a bordered cell,
+   only the outer-left and outer-right corners are rounded.
+   Active number gets a (non-blue) fill.  No animation. */
 #workspaces {
-    background: transparent;
-    margin: 0;
+    background-color: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 7px;
+    margin: 6px 6px 6px 4px;
     padding: 0;
-    padding-right: 4px;
 }
 
 #workspaces button {
-    padding: 0 3px;
-    margin: 7px 6px 7px 0;
-    font-size: 12px;
-    background: transparent;
-    transition: all 0.2s ease;
-    min-width: 20px;
-    min-height: 20px;
+    margin: 0;
+    padding: 0 6px;
+    min-width: 18px;
+    min-height: 21px;
+    border-radius: 0px;
+    font-size: 14px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.6);
+    background-color: transparent;
+}
+
+#workspaces button:first-child {
+    border-top-left-radius: 6px;
+    border-bottom-left-radius: 6px;
+}
+
+#workspaces button:last-child {
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+}
+
+#workspaces button.empty {
+    color: rgba(255, 255, 255, 0.278);
 }
 
 #workspaces button:hover {
-    background: rgba(255, 255, 255, 0.15);
     color: #ffffff;
 }
 
 #workspaces button.active {
-    background: rgba(255, 255, 255, 0.25);
     color: #ffffff;
-    font-weight: bold;
+    background-color: rgba(255, 255, 255, 0.15);
 }
 
 #workspaces button.urgent {
-    background: rgba(255, 120, 120, 0.4);
-    color: #ff7878;
+    color: #f38ba8;
+    background-color: rgba(243, 139, 168, 0.22);
 }
 
 
@@ -94,131 +121,97 @@ window#waybar {
 }
 
 
-/* Right-Section - Combined Block */
-#clock {
-    background: transparent;
+/* ============================================================
+   Right section — dms-style rounded pills
+   order:  clock · tray · battery · [brightness + sound] · [wifi + bt + avatar]
+   ============================================================ */
 
-    margin: 0;
-    padding: 0 4px 0 10px;
-    color: #ffffff;
-    transition: background 0.2s ease;
-    font-weight: 600;
-    font-size: 16px;
+/* shared pill shell */
+#clock,
+#tray,
+#power,
+#io,
+#status {
+    background-color: rgba(255, 255, 255, 0.08);
+    border-radius: 7px;
+    margin: 5px 3px;
+    transition: background-color 0.2s ease;
 }
 
-#battery,
-#idle_inhibitor,
-#network,
-#pulseaudio,
-#backlight,
-#tray {
-    background: transparent;
-
-    margin: 0;
-    padding: 0 4px;
-    color: #ffffff;
-    transition: background 0.2s ease;
-}
-
-#custom-user {
-    background: transparent;
-
-    margin: 0;
-    padding: 0 6px 0 30px;
-    color: #ffffff;
-    transition: background 0.4s ease;
-    font-weight: 500;
-    background-image: url("file:///home/sp/.config/waybar/assets/avatar.png");
-    background-repeat: no-repeat;
-    background-position: 4px center;
-    background-size: 21px 21px;
-    background-clip: padding-box;
-}
-
-#idle_inhibitor.activated {
-    color: #90EE90;
-    font-weight: 600;
-    font-size: 28px;
-    padding: 0px;
-}
-
-#idle_inhibitor.deactivated {
-    color: rgba(255, 255, 255, 0.6);
-    font-size: 28px;
-    padding: 0px;
-}
-
-#battery {
-    font-size: 14px;
-    color: rgba(255, 255, 255, 0.8);
-}
-
-#battery.warning:not(.charging) {
-    color: #FFA500;
-}
-
-#battery.critical:not(.charging) {
-    color: #FF6B6B;
-}
-
-#battery.charging {
-    color: #90EE90;
-}
-
-#network {
-    font-size: 14px;
-    color: rgba(255, 255, 255, 0.8);
-}
-
-#network.disconnected {
-    color: #FF6B6B;
-}
-
-#pulseaudio {
-    font-size: 14px;
-    color: rgba(255, 255, 255, 0.8);
-}
-
-#backlight {
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 14px;
-}
-
-#pulseaudio.muted {
-    color: #FF6B6B;
-}
-
-#tray {
-    padding: 4px 6px;
-    font-size: 14px;
-}
-
-/* Hover effects for the combined block */
-#idle_inhibitor:hover,
 #clock:hover,
-#battery:hover,
-#network:hover,
-#pulseaudio:hover,
-#backlight:hover,
-#tray:hover {
-    background: rgba(50, 50, 50, 0.9);
+#tray:hover,
+#power:hover,
+#io:hover,
+#status:hover {
+    background-color: rgba(255, 255, 255, 0.14);
 }
 
-#battery:hover,
-#network:hover,
-#pulseaudio:hover,
-#backlight:hover {
+#status {
+    margin-right: 10px;
+}
+
+/* ---- single-module pills ---- */
+#clock {
+    padding: 0 12px;
+    font-weight: 600;
+    font-size: 15px;
     color: #ffffff;
 }
 
-/* Hover effect for the user module */
-#custom-user:hover {
-    background: rgba(50, 50, 50, 0.9);
+#tray {
+    padding: 0 10px;
+}
+
+/* ---- group pills: the box carries the fill, children carry the gaps ---- */
+#power,
+#io,
+#status {
+    padding: 0 4px;
+}
+
+#power #battery,
+#power #custom-notif,
+#io #backlight,
+#io #pulseaudio,
+#status #network,
+#status #bluetooth {
+    background: transparent;
+    margin: 0;
+    color: #ffffff;
+}
+
+/* gaps + per-glyph sizing */
+#power #battery      { padding: 0 6px; font-size: 14px; }
+#power #custom-notif { padding: 0 6px; font-size: 22px; color: rgba(255, 255, 255, 0.9); }
+#io #backlight       { padding: 0 4px; font-size: 14px; }
+#io #pulseaudio      { padding: 0 5px; font-size: 14px; }
+#status #network     { padding: 0 5px; font-size: 27px; }
+#status #bluetooth   { padding: 0 5px; font-size: 18px; }
+
+#power #battery.warning:not(.charging)  { color: #f9a03f; }
+#power #battery.critical:not(.charging) { color: #f38ba8; }
+#power #custom-notif.notification       { color: #f9a03f; }   /* unread */
+#power #custom-notif.dnd-none,
+#power #custom-notif.dnd-notification   { color: rgba(255, 255, 255, 0.45); }   /* DND on */
+#io #pulseaudio.muted        { color: #f38ba8; }
+#status #network.disconnected,
+#status #network.disabled    { color: rgba(255, 255, 255, 0.45); }
+#status #bluetooth.disabled,
+#status #bluetooth.off       { color: rgba(255, 255, 255, 0.45); }
+#status #bluetooth.connected { color: #6ea8fe; }
+
+/* avatar — circular, right end of the status pill */
+#status #custom-user {
+    margin: 0 3px 0 4px;
+    padding: 0;
+    min-width: 21px;
+    min-height: 21px;
+    background-color: transparent;
     background-image: url("file:///home/sp/.config/waybar/assets/avatar.png");
     background-repeat: no-repeat;
-    background-position: 6px center;
-    background-size: 20px 20px;
-    background-clip: padding-box;
+    background-position: center;
+    background-size: 21px 21px;
+    border-radius: 50%;
 }
 
 /* Tooltips */

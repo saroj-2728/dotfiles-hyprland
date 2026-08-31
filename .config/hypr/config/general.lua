@@ -81,6 +81,8 @@ hl.layer_rule({
         namespace = "rofi"
     },
     blur = true,
+    dim_around = true,
+    ignore_alpha = 0.1
 })
 
 hl.layer_rule({
@@ -88,6 +90,7 @@ hl.layer_rule({
         namespace = "swaync-control-center"
     },
     blur = true,
+    dim_around = true,
     ignore_alpha = 0.1
 })
 
@@ -96,6 +99,8 @@ hl.layer_rule({
         namespace = "eww-control-center"
     },
     blur = true,
+    dim_around = true,
+    ignore_alpha = 0.1
 })
 
 
@@ -180,7 +185,7 @@ hl.config({
         disable_hyprland_logo = true, -- If true disables the random hyprland logo/anime girl background
         disable_splash_rendering = true,
 
-        on_focus_under_fullscreen = 1, -- Allow focus change under fullscreen windows, set to 0 to disable (WARNING: DO NOT EDIT THIS)
+        on_focus_under_fullscreen = 1,         -- Allow focus change under fullscreen windows, set to 0 to disable (WARNING: DO NOT EDIT THIS)
         exit_window_retains_fullscreen = true, -- If true, when a fullscreen window is closed, the next focused window will be fullscreen as well
     }
 })

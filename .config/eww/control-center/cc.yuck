@@ -1,250 +1,150 @@
-;; Define the closer widget for click-outside functionality
-(defwidget closer [window]
-  (eventbox :onclick "eww close ${window} && eww close ${window}-closer"))
+;; ══════════════════════════════════════════════════════════════════════
+;;  Control Center  ·  included from ~/.config/eww/eww.yuck
+;;  windows:  control-center  +  cc-closer
+;; ══════════════════════════════════════════════════════════════════════
 
-;; Define the closer window for control-center
-(defwindow control-center-closer
+(defvar SH "bash $HOME/.config/eww/control-center/scripts")
+(defvar confirm "")     ;; "" | "logout" | "suspend" | "reboot" | "shutdown"
+
+;; ---- reactive state ---------------------------------------------------
+;; NOTE: defpoll/deflisten command strings can't use eww vars, so the scripts
+;; dir is spelled out via $HOME here.
+(defpoll qs       :interval "2s"  :initial "{}"   "bash $HOME/.config/eww/control-center/scripts/state.sh")
+(defpoll audio    :interval "1s"  :initial "{}"   "bash $HOME/.config/eww/control-center/scripts/audio.sh get")
+(defpoll bright   :interval "2s"  :initial "50"   "bash $HOME/.config/eww/control-center/scripts/brightness.sh get")
+(defpoll cc-clock :interval "20s" :initial ""     "date '+%A · %d %b · %H:%M'")
+(defpoll cc-user  :interval "1h"  :initial "user" "whoami")
+(deflisten media  :initial "{}"                   "bash $HOME/.config/eww/control-center/scripts/media.sh")
+
+;; ══════════════════════════════════════════════════════════════════════
+;;  Widgets
+;; ══════════════════════════════════════════════════════════════════════
+
+(defwidget cc []
+  (box :class "cc" :orientation "v" :space-evenly false :spacing 13
+    (cc-header)
+    (cc-sliders)
+    (cc-toggles)
+    (cc-media)
+    (cc-session)))
+
+;; ---- header ----------------------------------------------------------
+(defwidget cc-header []
+  (box :class "cc-header" :orientation "h" :space-evenly false :spacing 12
+    (box :class "cc-avatar")
+    (box :orientation "v" :space-evenly false :hexpand true :valign "center"
+      (label :class "cc-hi"   :halign "start" :text "Hi, ${cc-user}")
+      (label :class "cc-date" :halign "start" :text cc-clock))
+    (button :class "cc-lock" :tooltip "Lock"
+      :onclick "${EWW_CMD} close control-center cc-closer ; ${SH}/session.sh lock" (label :text "󰌾"))))
+
+;; ---- sliders --------------------------------------------------------------
+(defwidget cc-sliders []
+  (box :class "cc-card" :orientation "v" :space-evenly false :spacing 14
+    (box :orientation "h" :space-evenly false :spacing 13
+      (label :class "cc-sld-icon" :text "󰃟")
+      (scale :class "cc-scale bright" :hexpand true :round-digits 0
+        :value {bright ?: 50} :min 1 :max 100 :draw-value false
+        :onchange "${SH}/brightness.sh set {}")
+      (label :class "cc-sld-val" :text "${bright ?: 50}%"))
+    (box :orientation "h" :space-evenly false :spacing 13
+      (button :class "cc-sld-icon btn ${(audio?.mute ?: false) ? 'muted' : ''}" :timeout "3s"
+        :tooltip "Mute" :onclick "${SH}/audio.sh mute ; ${SH}/ui.sh refresh -- ${EWW_CMD}"
+        (label :text {audio?.icon ?: "󰕾"}))
+      (scale :class "cc-scale vol" :hexpand true :round-digits 0
+        :value {audio?.vol ?: 0} :min 0 :max 100 :draw-value false
+        :onchange "${SH}/audio.sh set {}")
+      (label :class "cc-sld-val" :text "${audio?.vol ?: 0}%"))))
+
+;; ---- quick toggles ---------------------------------------------------
+(defwidget cc-toggle [icon name sub active toggle]
+  (eventbox :class "cc-toggle-evt" :cursor "pointer" :hexpand true :timeout "6s" :onclick toggle
+    (box :class "cc-toggle ${active ? 'on' : ''}" :orientation "h" :space-evenly false :hexpand true
+      (label :class "cc-toggle-ico" :valign "center" :text icon)
+      (box :orientation "v" :space-evenly false :valign "center" :hexpand true
+        (label :class "cc-toggle-name" :halign "start" :limit-width 18 :text name)
+        (label :class "cc-toggle-sub"  :halign "start" :limit-width 18 :text sub)))))
+
+(defwidget cc-toggles []
+  (box :class "cc-grid" :orientation "v" :space-evenly false :spacing 9
+    (box :orientation "h" :space-evenly true :spacing 9
+      (cc-toggle :name "Wi-Fi" :icon {(qs?.wifi_on ?: false) ? "󰖩" : "󰖪"} :sub {qs?.wifi_sub ?: "…"}
+        :active {qs?.wifi_on ?: false}
+        :toggle "${SH}/toggle.sh wifi ; ${SH}/ui.sh refresh -- ${EWW_CMD}")
+      (cc-toggle :name "Bluetooth" :icon {qs?.bt_icon ?: "󰂯"} :sub {qs?.bt_sub ?: "…"}
+        :active {qs?.bt_on ?: false}
+        :toggle "${SH}/toggle.sh bluetooth ; ${SH}/ui.sh refresh -- ${EWW_CMD}"))
+    (box :orientation "h" :space-evenly true :spacing 9
+      (cc-toggle :name "Night Light" :icon {(qs?.nl_on ?: false) ? "󰛨" : "󱩌"}
+        :sub {(qs?.nl_on ?: false) ? "On" : "Off"} :active {qs?.nl_on ?: false}
+        :toggle "${SH}/toggle.sh nightlight ; ${SH}/ui.sh refresh -- ${EWW_CMD}")
+      (cc-toggle :name "Do Not Disturb" :icon "󰂛"
+        :sub {(qs?.dnd_on ?: false) ? "On" : "Off"} :active {qs?.dnd_on ?: false}
+        :toggle "${SH}/toggle.sh dnd ; ${SH}/ui.sh refresh -- ${EWW_CMD}"))
+    (box :orientation "h" :space-evenly true :spacing 9
+      (cc-toggle :name "Microphone" :icon {(qs?.mic_muted ?: false) ? "󰍭" : "󰍬"}
+        :sub {(qs?.mic_muted ?: false) ? "Muted" : "On"} :active {!(qs?.mic_muted ?: false)}
+        :toggle "${SH}/toggle.sh mic ; ${SH}/ui.sh refresh -- ${EWW_CMD}")
+      (cc-toggle :name "Caffeine" :icon "󰅶"
+        :sub {(qs?.caf_on ?: false) ? "On" : "Off"} :active {qs?.caf_on ?: false}
+        :toggle "${SH}/toggle.sh caffeine ; ${SH}/ui.sh refresh -- ${EWW_CMD}"))))
+
+;; ---- media player (revealed only when something is playing) --------------
+(defwidget cc-media []
+  (revealer :transition "slidedown" :duration "200ms" :reveal {media?.has ?: false}
+    (box :class "cc-card cc-media" :orientation "h" :space-evenly false :spacing 12
+      (box :orientation "v" :space-evenly false :hexpand true :valign "center"
+        (label :class "cc-media-title"  :halign "start" :limit-width 26 :text {media?.title ?: ""})
+        (label :class "cc-media-artist" :halign "start" :limit-width 26 :text {media?.artist ?: ""}))
+      (box :orientation "h" :space-evenly false :spacing 4 :valign "center"
+        (button :class "cc-mbtn" :onclick "playerctl previous" (label :text "󰒮"))
+        (button :class "cc-mbtn play" :onclick "playerctl play-pause"
+          (label :text {(media?.status ?: "") == "Playing" ? "󰏤" : "󰐊"}))
+        (button :class "cc-mbtn" :onclick "playerctl next" (label :text "󰒭"))))))
+
+;; ---- session row (confirm before the destructive ones) ---------------
+(defwidget cc-session []
+  (box :class "cc-session"
+    (box :visible {confirm == ""} :orientation "h" :space-evenly true :spacing 9
+      (button :class "cc-sbtn" :tooltip "Lock"
+        :onclick "${EWW_CMD} close control-center cc-closer ; ${SH}/session.sh lock" (label :text "󰌾"))
+      (button :class "cc-sbtn" :tooltip "Log out"
+        :onclick "${SH}/ui.sh set confirm=logout -- ${EWW_CMD}" (label :text "󰗽"))
+      (button :class "cc-sbtn" :tooltip "Suspend"
+        :onclick "${SH}/ui.sh set confirm=suspend -- ${EWW_CMD}" (label :text "󰤄"))
+      (button :class "cc-sbtn" :tooltip "Reboot"
+        :onclick "${SH}/ui.sh set confirm=reboot -- ${EWW_CMD}" (label :text "󰜉"))
+      (button :class "cc-sbtn danger" :tooltip "Shut down"
+        :onclick "${SH}/ui.sh set confirm=shutdown -- ${EWW_CMD}" (label :text "󰐥")))
+    (box :visible {confirm != ""} :class "cc-confirm" :orientation "h" :space-evenly false :spacing 8
+      (label :class "cc-confirm-q" :hexpand true :halign "start"
+        :text {confirm == "shutdown" ? "Shut down?" : confirm == "reboot" ? "Reboot?" : confirm == "suspend" ? "Suspend?" : "Log out?"})
+      (button :class "cc-sbtn" :tooltip "Cancel"
+        :onclick "${SH}/ui.sh set confirm= -- ${EWW_CMD}" (label :text "󰅖"))
+      (button :class "cc-sbtn confirm-yes" :tooltip "Confirm"
+        :onclick "${EWW_CMD} close control-center cc-closer ; ${SH}/ui.sh set confirm= -- ${EWW_CMD} ; ${SH}/session.sh ${confirm}" (label :text "󰄬")))))
+
+;; ══════════════════════════════════════════════════════════════════════
+;;  Windows
+;;    cc-closer      — fullscreen; a click on it closes the panel
+;;    control-center — the panel, on the "overlay" layer so it always sits
+;;                     above cc-closer and receives its own clicks
+;;  Both are focusable:false so the panel can never trap the keyboard.
+;; ══════════════════════════════════════════════════════════════════════
+
+(defwindow cc-closer
   :monitor 0
-  :geometry (geometry :width "100%" :height "100%")
+  :namespace "eww-cc-closer"
+  :geometry (geometry :width "100%" :height "100%" :anchor "center")
   :stacking "fg"
   :focusable false
-  (closer :window "control-center"))
+  (eventbox :class "cc-backdrop"
+    :onclick "${EWW_CMD} close control-center cc-closer" (box)))
 
-;; Define our control center window
 (defwindow control-center
   :monitor 0
-  :geometry (geometry
-    :x "0.3%"
-    :y "0.6%"
-  :anchor "top right")
-  :stacking "fg"
-  :windowtype "dock"
-  :wm-ignore true
-  (box :class "control-center-box"
-    :orientation "v"
-    :space-evenly false
-    :spacing 10
-    (control-sliders)
-    (box :class "network-row"
-      :orientation "h"
-      :space-evenly true
-      :spacing 10
-      (wifi-control)
-      (bluetooth-control))
-    (box :class "feature-row"
-      :orientation "h"
-      :space-evenly true
-      :spacing 10
-      (nightlight-control)
-      (dnd-control))
-    (power-menu-button)))
-
-;; Define the sliders section (brightness and volume)
-(defwidget control-sliders []
-  (box :class "sliders-box"
-    :orientation "v"
-    :space-evenly false
-    :spacing 15
-    
-    ;; Brightness control
-    (box :class "slider-item"
-      :orientation "h"
-      :space-evenly false
-      :spacing 10
-      (label :class "slider-icon" :text "󰃠")
-      (scale :value brightness
-        :onchange "~/.config/eww/control-center/scripts/set-brightness.sh {}"
-        :min 1
-        :max 100
-      :tooltip "Brightness: ${brightness}%"))
-    
-    ;; Volume control
-    (box :class "slider-item"
-      :orientation "h"
-      :space-evenly false
-      :spacing 10
-      (label :class "slider-icon" :text "${volume-icon}")
-      (scale :value volume
-        :onchange "pactl set-sink-volume @DEFAULT_SINK@ {}%"
-        :min 0
-        :max 100
-      :tooltip "Volume: ${volume}%"))))
-
-;; Define WiFi control widget with hover effect
-(defwidget wifi-control []
-  (box :class "network-box"
-    :orientation "v"
-    :space-evenly false
-    :spacing 5
-    (box :class "network-container"
-      :orientation "h"
-      :space-evenly false
-      (eventbox
-        :onhover "${EWW_CMD} update wifi_hover=true"
-        :onhoverlost "${EWW_CMD} update wifi_hover=false"
-        :onclick "~/.config/eww/control-center/scripts/toggle-wifi.sh"
-        (box :class "network-details ${wifi_hover ? 'hover' : ''}"
-          :orientation "v"
-          :space-evenly false
-          :hexpand true
-          (box :class "icon-and-label"
-            :orientation "h"
-            :space-evenly false
-            :spacing 10
-            (label :class "network-icon ${wifi-status == 'connected' ? 'wifi-connected' : 'wifi-disconnected'}"
-            :text "${wifi-icon}")
-            (label :class "network-label"
-              :text "WiFi"
-            :halign "start"))
-          (label :class "network-status"
-            :text "${wifi-status == 'connected' ? wifi-ssid : 'Disconnected'}"
-          :halign "start")))
-      (button :class "network-arrow"
-        :onclick "notify-send 'WiFi Settings' 'Opening WiFi settings...'"
-        (label :text "❯")))))
-
-;; Define Bluetooth control widget with hover effect
-(defwidget bluetooth-control []
-  (box :class "network-box"
-    :orientation "v"
-    :space-evenly false
-    :spacing 5
-    (box :class "network-container"
-      :orientation "h"
-      :space-evenly false
-      (eventbox
-        :onhover "${EWW_CMD} update bt_hover=true"
-        :onhoverlost "${EWW_CMD} update bt_hover=false"
-        :onclick "~/.config/eww/control-center/scripts/toggle-bluetooth.sh"
-        (box :class "network-details ${bt_hover ? 'hover' : ''}"
-          :orientation "v"
-          :space-evenly false
-          :hexpand true
-          (box :class "icon-and-label"
-            :orientation "h"
-            :space-evenly false
-            :spacing 10
-            (label :class "network-icon ${bt-status ? 'bt-on' : 'bt-off'}"
-            :text "${bt-icon}")
-            (label :class "network-label"
-              :text "Bluetooth"
-            :halign "start"))
-          (label :class "network-status"
-            :text "${bt-status ? 'On' : 'Off'}"
-          :halign "start")))
-      (button :class "network-arrow"
-        :onclick "notify-send 'Bluetooth Settings' 'Opening Bluetooth settings...'"
-        (label :text "❯")))))
-
-;; Define Night Light control widget with hover effect - maintaining original layout
-(defwidget nightlight-control []
-  (eventbox
-    :onhover "${EWW_CMD} update nightlight_hover=true"
-    :onhoverlost "${EWW_CMD} update nightlight_hover=false"
-    :onclick "~/.config/eww/control-center/scripts/toggle-nightlight.sh"
-    (box :class "network-box ${nightlight_hover ? 'hover' : ''}"
-      :orientation "v"
-      :space-evenly false
-      :spacing 5
-      (box :class "network-container"
-        :orientation "h"
-        :space-evenly false
-        (box :class "network-details ${nightlight_hover ? 'text-hover' : ''}"
-          :orientation "v"
-          :space-evenly false
-          :hexpand true
-          (box :class "icon-and-label"
-            :orientation "h"
-            :space-evenly false
-            :spacing 10
-            (label :class "network-icon ${nightlight-status ? 'nightlight-on' : 'nightlight-off'}"
-            :text "${nightlight-status ? '󰛨' : '󱩌'}")
-            (label :class "network-label"
-              :text "Night Light"
-            :halign "start"))
-          (label :class "network-status"
-            :text "${nightlight-status ? 'On' : 'Off'}"
-          :halign "start"))))))
-
-;; Define dnd Assist control widget with hover effect - maintaining original layout
-(defwidget dnd-control []
-  (eventbox
-    :onhover "${EWW_CMD} update dnd_hover=true"
-    :onhoverlost "${EWW_CMD} update dnd_hover=false"
-    :onclick "~/.config/eww/control-center/scripts/toggle-dnd.sh"
-    (box :class "network-box ${dnd_hover ? 'hover' : ''}"
-      :orientation "v"
-      :space-evenly false
-      :spacing 5
-      (box :class "network-container"
-        :orientation "h"
-        :space-evenly false
-        (box :class "network-details ${dnd_hover ? 'text-hover' : ''}"
-          :orientation "v"
-          :space-evenly false
-          :hexpand true
-          (box :class "icon-and-label"
-            :orientation "h"
-            :space-evenly false
-            :spacing 10
-            (label :class "network-icon ${dnd-status ? 'dnd-on' : 'dnd-off'}"
-            :text "${dnd-status ? '󰍶' : '󰍶'}")
-            (label :class "network-label"
-              :text "DND"
-            :halign "start"))
-          (label :class "network-status"
-            :text "${dnd-status ? 'On' : 'Off'}"
-          :halign "start"))))))
-
-;; Define power menu button widget
-(defwidget power-menu-button []
-  (eventbox
-    :onhover "eww update power_hover=true"
-    :onhoverlost "eww update power_hover=false"
-    :onclick "~/.config/eww/control-center/scripts/open-power-menu.sh"
-    (box :class "power-icon-button ${power_hover ? 'hover' : ''}"
-      :orientation "h"
-      :space-evenly true
-      :halign "baseline"
-      (label :class "power-icon" :text "󰐥"))))
-
-;; Variables
-(defpoll brightness :interval "1s"
-"cat ~/.cache/eww/brightness || echo 50")
-
-(defpoll volume :interval "1s"
-  "pactl get-sink-volume @DEFAULT_SINK@ | grep -oP '[0-9]+(?=%)' | head -1 || echo 50")
-
-(defpoll volume-icon :interval "1s"
-"~/.config/eww/control-center/scripts/get-volume-icon.sh || echo '󰕾'")
-
-(defpoll wifi-status :interval "1s"
-"nmcli -t -f STATE g | head -n1 || echo 'disconnected'")
-
-(defpoll wifi-ssid :interval "1s"
-"nmcli -t -f active,ssid dev wifi | grep '^yes:' | cut -d':' -f2 || echo 'No Network'")
-
-(defpoll wifi-icon :interval "1s"
-"~/.config/eww/control-center/scripts/get-wifi-icon.sh || echo '󰤮'")
-
-;; Bluetooth variables
-(defpoll bt-status :interval "1s"
-"bluetoothctl show | grep 'Powered: yes' > /dev/null && echo true || echo false")
-
-(defpoll bt-icon :interval "1s"
-"~/.config/eww/control-center/scripts/get-bluetooth-icon.sh || echo '󰂲'")
-
-;; Night Light variables
-(defpoll nightlight-status :interval "1s"
-"~/.config/eww/control-center/scripts/get-nightlight-status.sh || echo false")
-
-;; dnd Assist variables
-(defpoll dnd-status :interval "1s"
-"~/.config/eww/control-center/scripts/get-dnd-status.sh || echo false")
-
-;; Hover state variables
-(defvar wifi_hover false)
-(defvar bt_hover false)
-(defvar nightlight_hover false)
-(defvar dnd_hover false)
-(defvar power_hover false)
+  :namespace "eww-control-center"
+  :geometry (geometry :x "4px" :y "3px" :width "392px" :anchor "top right")
+  :stacking "overlay"
+  :focusable false
+  (cc))

@@ -1,0 +1,221 @@
+# sample hyprlock.conf
+# for more configuration options, refer https://wiki.hyprland.org/Hypr-Ecosystem/hyprlock
+#
+# rendered text in all widgets supports pango markup (e.g. <b> or <i> tags)
+# ref. https://wiki.hyprland.org/Hypr-Ecosystem/hyprlock/#general-remarks
+#
+# shortcuts to clear password buffer: ESC, Ctrl+U, Ctrl+Backspace
+#
+# you can get started by copying this config to ~/.config/hypr/hyprlock.conf
+#
+
+$font = JetBrainsMono Nerd Font
+$fontAlt = FantasqueSansM Nerd Font Mono 
+$backgroundImage = ~/.config/backgrounds/wallpaperflare.com_wallpaper(2).jpg
+
+general {
+    hide_cursor = false
+    ignore_empty_input = true
+    fail_timeout = 1000
+}
+
+# uncomment to enable fingerprint authentication
+# auth {
+#     fingerprint {
+#         enabled = true
+#         ready_message = Scan fingerprint to unlock
+#         present_message = Scanning...
+#         retry_delay = 250 # in milliseconds
+#     }
+# }
+
+animations {
+    enabled = true
+    bezier = linear, 1, 1, 0, 0
+    animation = fadeIn, 1, 5, linear
+    animation = fadeOut, 1, 5, linear
+    animation = inputFieldDots, 1, 2, linear
+}
+
+background {
+    monitor =
+    # path = $backgroundImage
+    path = screenshot
+    color = rgba(25, 20, 20, 1.0)
+    blur_passes = 3
+}
+
+
+
+input-field {
+    monitor =
+    size = 18%, 5%
+    outline_thickness = 3
+    inner_color = rgba(0, 0, 0, 0.0) # no fill
+
+    outer_color = rgba(33ccffee) rgba(00ff99ee) 45deg
+    check_color = rgba(00ff99ee) rgba(ff6633ee) 120deg
+    fail_color = rgba(ff6633ee) rgba(ff0066ee) 40deg
+
+    font_color = rgb(143, 143, 143)
+    fade_on_empty = false
+    rounding = 15
+    font_family = $font
+    placeholder_text = Input password...
+    fail_text = $PAMFAIL
+
+    # uncomment to use a letter instead of a dot to indicate the typed password
+    # dots_text_format = *
+    # dots_size = 0.4
+    dots_spacing = 0.3
+
+    # uncomment to use an input indicator that does not show the password length (similar to swaylock's input indicator)
+    # hide_input = true
+
+    position = 0, -3%
+    # halign = center
+    # valign = center
+}
+
+# Border for container
+# shape {
+#    monitor =
+#    color = rgba(0, 0, 0, 0)
+
+#    rounding = 15
+#    position = 0, 5%
+#    size = 35%, 55%
+
+#    border_size = 2
+#    border_color = rgba(33ccffee) rgba(00ff99ee) 45deg
+# }
+
+# TIME
+label {
+    monitor =
+    font_family = $font
+    text = $TIME12
+    font_size = 80
+    
+    position = 0, 13%
+}
+
+# DATE
+label {
+    monitor =
+    text = cmd[update:60000] date +"%A, %d %B %Y" # update every 60 seconds
+    font_size = 25
+    font_family = $fontAlt
+
+    position = 0, 5%
+}
+
+# DESCRIPTION
+label {
+    monitor =
+    text = $DESC
+    font_size = 24
+    font_family = $fontAlt
+
+    position = 0, -11%
+}
+
+
+# Shape for music status
+shape {
+   monitor =
+   color = rgba(18, 28, 34, 0.5)
+
+   rounding = 15
+   position = 0, -45%
+   size = 27%, 60
+
+   zindex = 0
+
+   border_size = 1
+   border_color = rgba(3A3533FF)
+}
+
+# Music status
+label {
+    monitor =
+    text = cmd[update:1000] ~/.config/hypr/scripts/hyprlock/music-status.sh
+    font_size = 13
+    font_family = $fontAlt
+
+    position = 48, -45% # When music controls are enabled
+    # position = 0, -45%
+}
+
+# Music control buttons
+# Previous
+shape {
+    monitor =
+    color = rgba(0, 0, 0, 0)
+
+    rounding = 20
+    position = -12.1%, -45%
+    size = 25, 25
+
+    # border_size = 1
+    # border_color = rgba(33ccffee)
+    onclick = playerctl previous
+}
+label {
+    text = 
+    font_size = 13
+    font_family = $font
+    position = -12.1%, -45%
+}
+
+# # Play/Pause
+shape {
+    monitor =
+    color = rgba(0, 0, 0, 0)
+
+    rounding = 20
+    position = -10.6%, -45%
+    size = 25, 25
+
+    # border_size = 1
+    # border_color = rgba(33ccffee)
+    onclick = playerctl play-pause
+}
+label {
+    text = cmd[update:1000] ~/.config/hypr/scripts/hyprlock/player-icon.sh
+    font_size = 12
+    font_family = $font
+    position = -10.6%, -45%
+} 
+
+# # Next
+shape {
+    monitor =
+    color = rgba(0, 0, 0, 0)
+
+    rounding = 20
+    position = -9.1%, -45%
+    size = 25, 25
+
+    # border_size = 1
+    # border_color = rgba(33ccffee)
+
+    onclick = playerctl next
+}
+label {
+    text = 
+    font_size = 13
+    font_family = $font
+    position = -9.1%, -45%
+} 
+
+
+# Battery status
+label {
+    monitor =
+    text = cmd[update:20000] ~/.config/hypr/scripts/battery-status.sh
+    font_size = 13
+    font_family = $font
+
+    position = 48%, 48.5%
+}

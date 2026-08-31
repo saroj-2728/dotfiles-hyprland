@@ -1,0 +1,31 @@
+;; -----------------------------------------------------------------
+;;  Desktop clock  -  wallpaper widget, on every monitor
+;;  day (large) . date . time      always open (see hyprland.lua)
+;; -----------------------------------------------------------------
+
+(defpoll dc-day  :interval "60s" :initial "$(date '+%A')"        "date '+%A'")
+(defpoll dc-date :interval "60s" :initial "$(date '+%B %-d, %Y')" "date '+%B %-d, %Y'")
+(defpoll dc-time :interval "10s" :initial "$(date '+%H:%M')"      "date '+%H:%M'")
+
+(defwidget desktop-clock-w []
+  (box :class "dc" :orientation "v" :space-evenly false :halign "center" :valign "center"
+    (label :class "dc-day"  :halign "center" :text dc-day)
+    (label :class "dc-date" :halign "center" :text dc-date)
+    (label :class "dc-time" :halign "center" :text dc-time)))
+
+(defwindow desktop-clock
+  :monitor 0
+  :namespace "eww-desktop-clock"
+  :geometry (geometry :x "0px" :y "20%" :width "100%" :height "440px" :anchor "top left")
+  :stacking "bottom" :exclusive false :focusable false
+  (desktop-clock-w))
+
+
+; ============== for the monitor ============
+
+; (defwindow desktop-clock-2
+;   :monitor 1
+;   :namespace "eww-desktop-clock"
+;   :geometry (geometry :x "0px" :y "20%" :width "100%" :height "440px" :anchor "top left")
+;   :stacking "bottom" :exclusive false :focusable false
+;   (desktop-clock-w))

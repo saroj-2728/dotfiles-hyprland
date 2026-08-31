@@ -1,0 +1,141 @@
+configuration {
+    display-drun: "Apps:";
+    display-windows: "Windows:";
+    display-filebrowser: "Files:";
+    drun-display-format: "{icon} {name}";
+    font: "JetBrains Mono Nerd Font Medium 12";
+    modi: "window,run,drun,filebrowser";
+    show-icons: true;
+}
+
+@theme "/dev/null"
+
+* {
+    bg: rgba(30, 30, 30, 0.7);
+    bg-alt: rgba(50, 50, 50, 0.7);
+    
+    fg: #ffffff;
+    fg-alt: rgba(255, 255, 255, 0.7);
+    
+    selected: rgba(255, 255, 255, 0.25);
+    selected-bg: rgba(255, 255, 255, 0.15);
+    
+    background-color: transparent;
+    border-color: rgb(102, 107, 110);
+    border-radius: 4px;
+    
+    border: 0;
+    margin: 0;
+    padding: 0;
+    spacing: 0;
+}
+
+window {
+    width: 450;
+    height: 500;
+    background-color: @bg;
+    border: 2px;
+    border-color: @border-color;
+    border-radius: 4px;
+    padding: 0;
+}
+
+mainbox {
+    background-color: transparent;
+    children: [inputbar, listview];
+    padding: 12px;
+}
+
+inputbar {
+    children: [prompt, entry];
+    background-color: @bg-alt;
+    border-radius: 4px;
+    padding: 2px;
+    margin: 0 0 12px 0;
+    border: 2px;
+    border-color: @border-color;
+}
+
+prompt {
+    background-color: transparent;
+    padding: 12px 16px;
+    text-color: @fg;
+    font: "JetBrains Mono Nerd Font Bold 12";
+}
+
+entry {
+    background-color: transparent;
+    padding: 12px 0;
+    text-color: @fg;
+    placeholder: "Search...";
+    placeholder-color: @fg-alt;
+}
+
+listview {
+    background-color: transparent;
+    columns: 1;
+    lines: 8;
+    scrollbar: false;
+    spacing: 4px;
+}
+
+element {
+    background-color: transparent;
+    text-color: @fg-alt;
+    border: 1px;
+    border-color: transparent;
+    padding: 10px 12px;
+    margin: 2px 0;
+    border-radius: 4px;
+}
+
+element normal.normal {
+    background-color: transparent;
+    text-color: @fg-alt;
+}
+
+element selected.normal {
+    background-color: @selected-bg;
+    text-color: @fg;
+    border: 1px;
+    border-radius: 4px;
+}
+
+element alternate.normal {
+    background-color: transparent;
+    text-color: @fg-alt;
+}
+
+element-text {
+    background-color: transparent;
+    text-color: inherit;
+    vertical-align: 0.5;
+    font: "JetBrains Mono Nerd Font Medium 12";
+}
+
+element-icon {
+    background-color: transparent;
+    size: 24px;
+    margin: 0 8px 0 0;
+}
+
+mode-switcher {
+    spacing: 4px;
+    margin: 0 0 8px 0;
+}
+
+button {
+    padding: 8px 16px;
+    background-color: @bg-alt;
+    text-color: @fg-alt;
+    border-radius: 4px;
+    margin: 2px;
+    border: 1px;
+    font: "JetBrains Mono Nerd Font Medium 11";
+}
+
+button selected {
+    background-color: @selected-bg;
+    text-color: @fg;
+    border: 1px;
+}

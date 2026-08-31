@@ -19,19 +19,19 @@ require("config/input")
 --- https://wiki.hypr.land/Configuring/Basics/Monitors/
 
 -- Monitor on the left of laptop screen
-hl.monitor({
-    output = "eDP-1",
-    mode = "preferred",
-    position = "1920x0",
-    scale = 1.25,
-})
-
-hl.monitor({
-    output = "HDMI-A-1",
-    mode = "preferred",
-    position = "0x0",
-    scale = 1,
-})
+-- hl.monitor({
+--     output = "eDP-1",
+--     mode = "preferred",
+--     position = "1920x0",
+--     scale = 1.25,
+-- })
+--
+-- hl.monitor({
+--     output = "HDMI-A-1",
+--     mode = "preferred",
+--     position = "0x0",
+--     scale = 1,
+-- })
 
 -- Mirror the laptop screen to the monitor
 -- hl.monitor({
@@ -43,18 +43,18 @@ hl.monitor({
 -- })
 
 -- Monitor on the right of laptop screen
--- hl.monitor({
---     output = "eDP-1",
---     mode = "preferred",
---     position = "auto",
---     scale = 1.25,
--- })
--- hl.monitor({
---     output = "HDMI-A-1",
---     mode = "preferred",
---     position = "auto",
---     scale = 1,
--- })
+hl.monitor({
+    output = "eDP-1",
+    mode = "preferred",
+    position = "auto",
+    scale = 1.25,
+})
+hl.monitor({
+    output = "HDMI-A-1",
+    mode = "preferred",
+    position = "auto",
+    scale = 1,
+})
 
 -- Unscale XWayland
 hl.config({
@@ -76,6 +76,8 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("swaync & hypridle & nm-applet & blueman-applet & kwalletd5 & waybar")
 
     hl.exec_cmd("hyprpaper & eww daemon")
+
+    hl.exec_cmd("sleep 2 && eww open desktop-clock")
 
     hl.exec_cmd("sleep 1 && ~/.config/hypr/scripts/random_wallpaper.sh")
 

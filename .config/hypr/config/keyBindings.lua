@@ -160,6 +160,10 @@ hl.bind("XF86AudioPlay", hl.dsp.exec_cmd("playerctl play-pause"), { locked = tru
 hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"), { locked = true })
 
 
+-- Power button
+hl.bind("XF86PowerOff", hl.dsp.exec_cmd("eww open power-menu && eww open power-menu-closer"))
+
+
 -- Open programs
 hl.bind(mainMod .. " + RETURN", hl.dsp.exec_cmd(terminal))
 hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(fileManager))
@@ -172,6 +176,7 @@ hl.bind(mainMod .. " + O", hl.dsp.exec_cmd("code"))
 hl.bind(mainMod .. " + SPACE", hl.dsp.exec_cmd(menu))
 hl.bind("CONTROL + " .. mainMod .. " + SPACE", hl.dsp.exec_cmd(commandMenu))
 hl.bind(superShift .. " + SPACE", hl.dsp.exec_cmd(windowMenu))
+hl.bind(mainMod .. " + K", hl.dsp.exec_cmd(windowMenu))
 hl.bind(mainMod .. " + N", hl.dsp.exec_cmd("swaync-client -t"))
 hl.bind(superShift .. " + I", hl.dsp.exec_cmd(firefoxInput))
 hl.bind(superShift .. " + Z", hl.dsp.exec_cmd(zenInput))

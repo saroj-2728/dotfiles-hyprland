@@ -3,7 +3,7 @@
         "layer": "top",
         "position": "top",
         "output": "eDP-1",
-        "height": 40,
+        "height": 42,
         "spacing": 0,
         "margin-top": 0,
         "margin-left": 0,
@@ -18,13 +18,10 @@
         ],
         "modules-right": [
             "clock",
-            "idle_inhibitor",
-            "battery",
-            "network",
-            "pulseaudio",
-            "backlight",
             "tray",
-            "custom/user"
+            "group/power",
+            "group/io",
+            "group/status"
         ],
         "custom/launcher": {
             "format": "",
@@ -53,6 +50,7 @@
                 "blueman-manager": "",
                 "org.pulseaudio.pavucontrol": "",
                 "org.gnome.TextEditor": "󱄽",
+                "discord": "",
                 "": "."
             },
             "on-click": "pkill waybar"
@@ -103,16 +101,6 @@
                 }
             }
         },
-        "idle_inhibitor": {
-            "format": "{icon}",
-            "format-icons": {
-                "activated": "  ",
-                "deactivated": "  "
-            },
-            "tooltip": true,
-            "tooltip-format-activated": "Idle Inhibitor: Active (Idle Blocked)",
-            "tooltip-format-deactivated": "Idle Inhibitor: Inactive (System Can Idle)"
-        },
         "battery": {
             "interval": 20,
             "states": {
@@ -120,9 +108,9 @@
                 "warning": 30,
                 "critical": 15
             },
-            "format": "{icon} {capacity}%",
-            "format-charging": "󰂄 {capacity}%",
-            "format-plugged": "󰂄 {capacity}%",
+            "format": "<span color='#89b4fa' size='118%'>{icon}</span> {capacity}%",
+            "format-charging": "<span color='#a6e3a1' size='118%'>󰂄</span> {capacity}%",
+            "format-plugged": "<span color='#a6e3a1' size='118%'>󰂄</span> {capacity}%",
             "format-alt": "{capacity}%",
             "format-icons": [
                 "󰂎",
@@ -139,29 +127,79 @@
             ],
             "tooltip-format": "{capacity}% - {timeTo}"
         },
+        "custom/notif": {
+            "format": "{icon}",
+            "format-icons": {
+                "none": "",
+                "notification": "",
+                "inhibited-none": "",
+                "inhibited-notification": "",
+                "dnd-none": "",
+                "dnd-notification": "",
+                "dnd-inhibited-none": "",
+                "dnd-inhibited-notification": ""
+            },
+            "return-type": "json",
+            "exec-if": "which swaync-client",
+            "exec": "swaync-client -swb",
+            "on-click": "swaync-client -t -sw",
+            "on-click-right": "swaync-client -d -sw",
+            "escape": true,
+            "tooltip": false
+        },
         "network": {
-            "format-wifi": "󰤨 {signalStrength}%",
-            "format-ethernet": "󰈀",
-            "format-disconnected": "󰤭 0%",
-            "format-disabled": "󰤭 0%",
-            "tooltip-format-wifi": "{essid} - {signalStrength}%",
-            "tooltip-format-ethernet": "Connected",
+            "format-wifi": "",
+            "format-ethernet": "",
+            "format-disconnected": "",
+            "format-disabled": "",
+            "tooltip-format-wifi": "{essid}   {signalStrength}%",
+            "tooltip-format-ethernet": "{ifname}",
             "tooltip-format-disconnected": "Disconnected",
-            "on-click": "~/.config/waybar/scripts/wifi-menu.sh"
+            "on-click": "~/.config/waybar/scripts/toggle-control-center.sh"
         },
         "pulseaudio": {
-            "format": "{icon} {volume}%",
-            "format-muted": "󰝟 0%",
+            "format": "<span size='178%'>{icon}</span> <span rise='3838'>{volume}%</span>",
+            "format-bluetooth": "<span size='178%'>{icon}</span> <span rise='3838'>{volume}%</span>",
+            "format-muted": "<span size='178%'>󰝟</span> <span rise='3838'>0%</span>",
             "format-icons": {
                 "default": [
-                    "󰕿",
-                    "󰖀",
-                    "󰕾"
+                    "",
+                    "",
+                    ""
                 ]
             },
-            "tooltip-format": "Volume: {volume}%",
+            "tooltip-format": "{desc}   {volume}%",
             "on-click": "pavucontrol",
             "on-click-right": "pactl set-sink-mute @DEFAULT_SINK@ toggle"
+        },
+        "bluetooth": {
+            "format": "",
+            "tooltip-format": "{controller_alias}   {status}",
+            "tooltip-format-connected": "{controller_alias}   {num_connections} connected\n{device_enumerate}",
+            "tooltip-format-enumerate-connected": "{device_alias}",
+            "on-click": "~/.config/waybar/scripts/toggle-control-center.sh"
+        },
+        "group/power": {
+            "orientation": "inherit",
+            "modules": [
+                "battery",
+                "custom/notif"
+            ]
+        },
+        "group/io": {
+            "orientation": "inherit",
+            "modules": [
+                "backlight",
+                "pulseaudio"
+            ]
+        },
+        "group/status": {
+            "orientation": "inherit",
+            "modules": [
+                "network",
+                "bluetooth",
+                "custom/user"
+            ]
         },
         "mpris": {
             "format": "{player_icon} {dynamic}",
@@ -180,28 +218,25 @@
         },
         "tray": {
             "icon-size": 14,
-            "spacing": 6,
+            "spacing": 8,
             "show-passive-items": true
         },
         "custom/user": {
-            "format": "{}",
-            "exec": "whoami",
-            "interval": 3600,
+            "format": " ",
             "tooltip": false,
             "on-click": "~/.config/waybar/scripts/toggle-control-center.sh"
         },
         "backlight": {
             "device": "intel_backlight",
-            "format": "{icon} {percent}%",
+            "format": "<span size='158%'>{icon}</span> <span rise='2838'>{percent}%</span>",
             "format-icons": [
                 "󰃞",
                 "󰃟",
                 "󰃝",
                 "󰃠"
             ],
-            "on-scroll-up": "brightnessctl set +1%",
-            "on-scroll-down": "brightnessctl set 1%-",
             "on-click": "brightnessctl set 100%",
+            "on-click-right": "brightnessctl set 30%",
             "tooltip": true,
             "tooltip-format": "Brightness: {percent}%"
         }
@@ -210,7 +245,7 @@
         "layer": "top",
         "position": "top",
         "output": "HDMI-A-1",
-        "height": 40,
+        "height": 42,
         "spacing": 0,
         "margin-top": 0,
         "margin-left": 0,
@@ -225,13 +260,10 @@
         ],
         "modules-right": [
             "clock",
-            "idle_inhibitor",
-            "battery",
-            "network",
-            "pulseaudio",
-            "backlight",
             "tray",
-            "custom/user"
+            "group/power",
+            "group/io",
+            "group/status"
         ],
         "custom/launcher": {
             "format": "",
@@ -260,7 +292,7 @@
                 "blueman-manager": "",
                 "org.pulseaudio.pavucontrol": "",
                 "org.gnome.TextEditor": "󱄽",
-
+                "discord": "",
                 "": "."
             },
             "on-click": "pkill waybar"
@@ -311,16 +343,6 @@
                 }
             }
         },
-        "idle_inhibitor": {
-            "format": "{icon}",
-            "format-icons": {
-                "activated": "  ",
-                "deactivated": "  "
-            },
-            "tooltip": true,
-            "tooltip-format-activated": "Idle Inhibitor: Active (Idle Blocked)",
-            "tooltip-format-deactivated": "Idle Inhibitor: Inactive (System Can Idle)"
-        },
         "battery": {
             "interval": 20,
             "states": {
@@ -328,9 +350,9 @@
                 "warning": 30,
                 "critical": 15
             },
-            "format": "{icon} {capacity}%",
-            "format-charging": "󰂄 {capacity}%",
-            "format-plugged": "󰂄 {capacity}%",
+            "format": "<span color='#89b4fa' size='118%'>{icon}</span> {capacity}%",
+            "format-charging": "<span color='#a6e3a1' size='118%'>󰂄</span> {capacity}%",
+            "format-plugged": "<span color='#a6e3a1' size='118%'>󰂄</span> {capacity}%",
             "format-alt": "{capacity}%",
             "format-icons": [
                 "󰂎",
@@ -347,29 +369,77 @@
             ],
             "tooltip-format": "{capacity}% - {timeTo}"
         },
+        "custom/notif": {
+            "format": "{icon}",
+            "format-icons": {
+                "none": "",
+                "notification": "",
+                "inhibited-none": "",
+                "inhibited-notification": "",
+                "dnd-none": "",
+                "dnd-notification": "",
+                "dnd-inhibited-none": "",
+                "dnd-inhibited-notification": ""
+            },
+            "return-type": "json",
+            "exec-if": "which swaync-client",
+            "exec": "swaync-client -swb",
+            "on-click": "swaync-client -t -sw",
+            "on-click-right": "swaync-client -d -sw",
+            "escape": true,
+            "tooltip": false
+        },
         "network": {
-            "format-wifi": "󰤨 {signalStrength}%",
-            "format-ethernet": "󰈀",
-            "format-disconnected": "󰤭 0%",
-            "format-disabled": "󰤭 0%",
-            "tooltip-format-wifi": "{essid} - {signalStrength}%",
-            "tooltip-format-ethernet": "Connected",
-            "tooltip-format-disconnected": "Disconnected",
-            "on-click": "~/.config/waybar/scripts/wifi-menu.sh"
+            "format-wifi": "",
+            "format-ethernet": "",
+            "format-disconnected": "",
+            "format-disabled": "",
+            "tooltip-format-wifi": "{essid}   {signalStrength}%",
+            "tooltip-format-ethernet": "{ifname}",
+            "tooltip-format-disconnected": "Disconnected"
         },
         "pulseaudio": {
-            "format": "{icon} {volume}%",
-            "format-muted": "󰝟 0%",
+            "format": "<span size='178%'>{icon}</span> <span rise='3838'>{volume}%</span>",
+            "format-bluetooth": "<span size='178%'>{icon}</span> <span rise='3838'>{volume}%</span>",
+            "format-muted": "<span size='178%'>󰝟</span> <span rise='3838'>0%</span>",
             "format-icons": {
                 "default": [
-                    "󰕿",
-                    "󰖀",
-                    "󰕾"
+                    "",
+                    "",
+                    ""
                 ]
             },
-            "tooltip-format": "Volume: {volume}%",
+            "tooltip-format": "{desc}   {volume}%",
             "on-click": "pavucontrol",
             "on-click-right": "pactl set-sink-mute @DEFAULT_SINK@ toggle"
+        },
+        "bluetooth": {
+            "format": "",
+            "tooltip-format": "{controller_alias}   {status}",
+            "tooltip-format-connected": "{controller_alias}   {num_connections} connected\n{device_enumerate}",
+            "tooltip-format-enumerate-connected": "{device_alias}"
+        },
+        "group/power": {
+            "orientation": "inherit",
+            "modules": [
+                "battery",
+                "custom/notif"
+            ]
+        },
+        "group/io": {
+            "orientation": "inherit",
+            "modules": [
+                "backlight",
+                "pulseaudio"
+            ]
+        },
+        "group/status": {
+            "orientation": "inherit",
+            "modules": [
+                "network",
+                "bluetooth",
+                "custom/user"
+            ]
         },
         "mpris": {
             "format": "{player_icon} {dynamic}",
@@ -388,27 +458,24 @@
         },
         "tray": {
             "icon-size": 14,
-            "spacing": 6,
+            "spacing": 8,
             "show-passive-items": true
         },
         "custom/user": {
-            "format": "{}",
-            "exec": "whoami",
-            "interval": 3600,
+            "format": " ",
             "tooltip": false
         },
         "backlight": {
             "device": "intel_backlight",
-            "format": "{icon} {percent}%",
+            "format": "<span size='158%'>{icon}</span> <span rise='2838'>{percent}%</span>",
             "format-icons": [
                 "󰃞",
                 "󰃟",
                 "󰃝",
                 "󰃠"
             ],
-            "on-scroll-up": "brightnessctl set +1%",
-            "on-scroll-down": "brightnessctl set 1%-",
             "on-click": "brightnessctl set 100%",
+            "on-click-right": "brightnessctl set 30%",
             "tooltip": true,
             "tooltip-format": "Brightness: {percent}%"
         }

@@ -6,3 +6,6 @@
 
 ;; Date and time
 (include "./date-widget/dw.yuck")
+
+;; Desktop clock (wallpaper widget, laptop screen)
+(include "./desktop-clock/dc.yuck")
